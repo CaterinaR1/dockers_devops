@@ -1,9 +1,11 @@
 ## percorso-be/Dockerfile
 # Stage 1: build
+# syntax=docker/dockerfile:1.7
 FROM node:20.11.1-alpine3.19 AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 COPY . .
 
 # Stage 2: runtime
