@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lipari-be-service # Nome DNS interno del Service
+spec:
+  type: ClusterIP # Espone il servizio solo all'interno del cluster
+  selector:
+    app: lipari-be # Seleziona i Pod del backend
+  ports:
+    - name: http # Nome della porta
+      port: 80 # Porta esposta dal Service
+      targetPort: 3000 # Porta Node.js nel container
+      protocol: TCP # Protocollo di trasporto

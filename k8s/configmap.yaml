@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lipari-be-config # Configurazione del backend
+data:
+  redis-url: "redis://cache:6379" # Indirizzo del servizio Redis nel cluster
+  log-level: "info" # Livello di logging

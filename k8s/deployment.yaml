@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lipari-be # Nome del Deployment
+  labels:
+    app: lipari-be # Etichetta del Deployment
+spec:
+  replicas: 3 # Numero desiderato di repliche
+  selector:
+    matchLabels:
+      app: lipari-be # Seleziona i Pod gestiti
+  template:
+    metadata:
+      labels:
+        app: lipari-be # Etichetta assegnata ai Pod
+    spec:
+      containers:
+        - name: lipari-be # Nome del container
+          # Immagine BE fissata allo SHA del commit
+          image: ghcr.io/caterinar1/dockers_devops-be:c913110A
+          imagePullPolicy: IfNotPresent # Scarica l'immagine se non è presente
+          ports:
+            - name: http # Nome della porta applicativa
+              containerPort: 3000 # Porta di Node.js
+              protocol: TCP # Protocollo della porta
+          env:
+            - name: REDIS_URL # Variabile per la connessione Redis
+              valueFrom:
+                configMapKeyRef:
+                  name: lipari-be-config
+                  key: redis-url
+            - name: LOG_LEVEL # Livello dei log
+              valueFrom:
+                configMapKeyRef:
+                  name: lipari-be-config
+                  key: log-level
+          livenessProbe:
+            httpGet:
+              path: /healthz # Controlla che l'applicazione sia viva
+              port: http
+            initialDelaySeconds: 30 # Attesa iniziale di 30 secondi
+            periodSeconds: 10 # Intervallo tra i controlli
+          readinessProbe:
+            httpGet:
+              path: /healthz # Controlla che il Pod possa ricevere traffico
+              port: http
+            initialDelaySeconds: 5 # Attesa iniziale di 5 secondi
+            periodSeconds: 5 # Intervallo tra i controlli
+          resources:
+            requests:
+              cpu: 100m # CPU richiesta al scheduler
+              memory: 128Mi # Memoria richiesta al scheduler
+            limits:
+              cpu: 500m # Limite CPU
+              memory: 256Mi # Limite memoria
